@@ -1,5 +1,6 @@
 .env
-node_mogules/
+node_modules/
 dist/
 .DS_Store
-coverage/   
+coverage/
+
