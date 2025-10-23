@@ -1,2 +1,5 @@
-!.env
-!.gitignore
+.env
+node_mogules/
+dist/
+.DS_Store
+coverage/   
