@@ -1,25 +1,25 @@
-import { PRODUCTS_URL } from '../constants/apiConstants';
-import { apiSlice } from './apiSlice';
+import { PRODUCT_URL } from "../constants/Urls";
+import { apiSlice } from "./apiSlice";
 
-export const productsApiSlice = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    getProducts: builder.query({
-      query: ({ keyword = '', pageNumber = '' }) => ({
-        url: `${PRODUCTS_URL}`,
-        params: { keyword, pageNumber },
-      }),
-      keepUnusedDataFor: 5,
+export const productsApiSlice = apiSlice.injectEndpoints({ 
+    endpoints:(builder) => ({
+        getProducts:builder.query({
+            query:({ keyword, pageNumber}) => ({
+                url: PRODUCT_URL,
+                params:{ keyword, pageNumber }
+            }),
+            keepUnusedDataFor:5,
+            providesTags:['Products'],
+        }),
+        getProductDetails:builder.query({
+            query:(productID) => ({
+                url:`${PRODUCT_URL}/${productID}`
+            }),
+            keepUnusedDataFor:5,
+            providesTags:['Products'],
+        }),
     }),
-    getProductDetails: builder.query({
-      query: (productId) => ({
-        url: `${PRODUCTS_URL}/${productId}`,
-      }),
-      keepUnusedDataFor: 5,
-    }),
-  }),
 });
 
-export const { 
-  useGetProductsQuery, 
-  useGetProductDetailsQuery 
-} = productsApiSlice;
+export const { useGetProductsQuery, useGetProductsDetailsQuery } = 
+productsApiSlice;

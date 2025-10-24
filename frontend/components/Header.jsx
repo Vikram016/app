@@ -9,37 +9,39 @@ import {
 import React, { useState, useCallback } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Colors } from "../constants/Utils";
-import { useNavigation } from "@react-navigation/native";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { useSelector } from "react-redux";
 
 const Header = () => {
-  const [searchText, setSerachText] = useState("");
-  const navigation = useNavigation();
-  const router = useRouter();
+  const [searchText, setSearchText] = useState("");
 
+  // Handle undefined states safely
+  const cartItems = useSelector((state) => state.cart?.cartItems || []);
+  const userInfo = useSelector((state) => state.auth?.userInfo);
+
+  const router = useRouter();
   const { keyword = "" } = useLocalSearchParams();
 
   const handleSearch = useCallback(() => {
-    if (searchText.trim().length >= 2 || searchText.trim().length === 0) {
+    const trimmed = searchText.trim();
+    if (trimmed.length >= 2 || trimmed.length === 0) {
       router.setParams({
-        keyword: searchText.trim(),
-        pageNumber: 1,
+        keyword: trimmed,
+        pageNumber: "1",
       });
     }
   }, [searchText, router]);
 
   const clearSearch = () => {
-    setSerachText("");
+    setSearchText("");
     router.setParams({
       keyword: "",
       pageNumber: "1",
     });
   };
 
-  //showAllProducts
-
   const showAllProducts = () => {
-    setSerachText("");
+    setSearchText("");
     router.setParams({
       keyword: "",
       pageNumber: "1",
@@ -53,8 +55,20 @@ const Header = () => {
           source={require("../assets/images/logo.png")}
           style={styles.logo}
         />
-        <TouchableOpacity onPress={() => {}} style={styles.cartIconContainer}>
+
+        <TouchableOpacity
+          onPress={() => router.push("(screens)/Cart")}
+          style={styles.cartIconContainer}
+        >
           <Ionicons name="cart" size={35} color={Colors.primary} />
+
+          {cartItems.length > 0 && (
+            <View style={styles.cartBadge}>
+              <Text style={styles.cartBadgeText}>
+                {cartItems.reduce((acc, item) => acc + item.qty, 0)}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
 
@@ -70,9 +84,10 @@ const Header = () => {
             style={styles.searchInput}
             placeholder="Search Products..."
             value={searchText}
-            onChangeText={setSerachText}
+            onChangeText={setSearchText}
             placeholderTextColor={Colors.lightGray}
-            OnSubmitEditing={handleSearch}
+            returnKeyType="search"
+            onSubmitEditing={handleSearch}
           />
 
           {searchText ? (
@@ -81,28 +96,32 @@ const Header = () => {
             </TouchableOpacity>
           ) : null}
         </View>
+
         {searchText.length > 0 && (
           <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-            <Text style={styles.searchButtonText}>search</Text>
+            <Text style={styles.searchButtonText}>Search</Text>
           </TouchableOpacity>
         )}
       </View>
 
       {keyword && (
         <View style={styles.activeFilterRow}>
-          <Text style={styles.filterText}>
-            showing result for : "{keyword}"
-          </Text>
+          <Text style={styles.filterText}>Showing result for: {keyword}</Text>
           <TouchableOpacity
             style={styles.showAllButton}
             onPress={showAllProducts}
           >
-            <Text style={styles.showAllButtonText}> show All Product</Text>
+            <Text style={styles.showAllButtonText}>Show All Products</Text>
           </TouchableOpacity>
         </View>
       )}
+
       <View style={styles.bottomRow}>
-        <Text style={styles.welcomeText}></Text>
+        {userInfo && (
+          <Text style={styles.welcomeText}>
+            Welcome {userInfo.name.split(" ")[0]} 👋
+          </Text>
+        )}
       </View>
     </View>
   );
@@ -141,12 +160,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: Colors.white,
     borderRadius: 20,
-    paddingHorizonal: 10,
+    paddingHorizontal: 10,
     height: 40,
     borderWidth: 1,
     borderColor: Colors.primary,
   },
-
   searchButton: {
     backgroundColor: Colors.primary,
     paddingHorizontal: 15,
@@ -181,14 +199,14 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   cartBadge: {
-    position: "absoulte",
+    position: "absolute",
     top: -5,
     right: -5,
     backgroundColor: Colors.textRed,
     borderRadius: 20,
     width: 20,
     height: 20,
-    justifycontent: "center",
+    justifyContent: "center",
     alignItems: "center",
   },
   cartBadgeText: {
@@ -210,7 +228,7 @@ const styles = StyleSheet.create({
   },
   filterText: {
     color: Colors.primary,
-    fontsize: 14,
+    fontSize: 14,
     fontStyle: "italic",
   },
   showAllButton: {

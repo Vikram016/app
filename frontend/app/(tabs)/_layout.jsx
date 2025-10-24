@@ -1,5 +1,6 @@
 import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
+
 import { Colors } from "../../constants/Utils";
 
 export default function TabLayout() {
@@ -31,7 +32,6 @@ export default function TabLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
         name="profile"
         options={{
@@ -45,7 +45,6 @@ export default function TabLayout() {
           ),
         }}
       />
-
     </Tabs>
   );
 }
